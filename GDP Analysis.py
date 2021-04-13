@@ -172,3 +172,20 @@ for i in range(0,train_test_Y.shape[0]):
        (data_shuffled['Population'].iloc[i]>1e8) |
        (data_shuffled['GDP ($ per capita)'].iloc[i]>10000)):
         plt.text(train_test_Y.iloc[i]+200, train_test_pred_Y.iloc[i]-200, label.iloc[i], size='small')
+        
+#Total GDP
+data['Total_GDP ($)'] = data['GDP ($ per capita)'] * data['Population']
+#plt.figure(figsize=(16,6))
+top_gdp_countries = data.sort_values('Total_GDP ($)',ascending=False).head(10)
+other = pd.DataFrame({'Country':['Other'], 'Total_GDP ($)':[data['Total_GDP ($)'].sum() - top_gdp_countries['Total_GDP ($)'].sum()]})
+gdps = pd.concat([top_gdp_countries[['Country','Total_GDP ($)']],other],ignore_index=True)
+
+fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(20,7),gridspec_kw = {'width_ratios':[2,1]})
+sns.barplot(x='Country',y='Total_GDP ($)',data=gdps,ax=axes[0],palette='Set3')
+axes[0].set_xlabel('Country',labelpad=30,fontsize=16)
+axes[0].set_ylabel('Total_GDP',labelpad=30,fontsize=16)
+
+colors = sns.color_palette("Set3", gdps.shape[0]).as_hex()
+axes[1].pie(gdps['Total_GDP ($)'], labels=gdps['Country'],colors=colors,autopct='%1.1f%%',shadow=True)
+axes[1].axis('equal')
+plt.show()
