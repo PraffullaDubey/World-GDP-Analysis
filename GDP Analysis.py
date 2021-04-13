@@ -10,3 +10,5 @@ from sklearn.tree import DecisionTreeRegressor
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_squared_error, mean_squared_log_error
 
+data=pd.read_csv('countries of the world.csv',decimal=',')
+data.head()
