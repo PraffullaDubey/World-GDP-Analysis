@@ -189,3 +189,35 @@ colors = sns.color_palette("Set3", gdps.shape[0]).as_hex()
 axes[1].pie(gdps['Total_GDP ($)'], labels=gdps['Country'],colors=colors,autopct='%1.1f%%',shadow=True)
 axes[1].axis('equal')
 plt.show()
+
+#Comparision
+Rank1 = data[['Country','Total_GDP ($)']].sort_values('Total_GDP ($)', ascending=False).reset_index()
+Rank2 = data[['Country','GDP ($ per capita)']].sort_values('GDP ($ per capita)', ascending=False).reset_index()
+Rank1 = pd.Series(Rank1.index.values+1, index=Rank1.Country)
+Rank2 = pd.Series(Rank2.index.values+1, index=Rank2.Country)
+Rank_change = (Rank2-Rank1).sort_values(ascending=False)
+print('rank of total GDP - rank of GDP per capita:')
+print(Rank_change.loc[top_gdp_countries.Country])
+
+#Factors affecting GDP
+corr_to_gdp = pd.Series()
+for col in data.columns.values[2:]:
+    if ((col!='Total_GDP ($)')&(col!='Climate')&(col!='GDP ($ per capita)')):
+        corr_to_gdp[col] = data['Total_GDP ($)'].corr(data[col])
+abs_corr_to_gdp = corr_to_gdp.abs().sort_values(ascending=False)
+corr_to_gdp = corr_to_gdp.loc[abs_corr_to_gdp.index]
+print(corr_to_gdp)
+
+#Comparing top 10 countries
+plot_data = top_gdp_countries.head(10)[['Country','Agriculture', 'Industry', 'Service']]
+plot_data = plot_data.set_index('Country')
+ax = plot_data.plot.bar(stacked=True,figsize=(10,6))
+ax.legend(bbox_to_anchor=(1, 1))
+plt.show()
+
+#Graph for land usage
+plot_data = top_gdp_countries[['Country','Arable (%)', 'Crops (%)', 'Other (%)']]
+plot_data = plot_data.set_index('Country')
+ax = plot_data.plot.bar(stacked=True,figsize=(10,6))
+ax.legend(bbox_to_anchor=(1, 1))
+plt.show()
