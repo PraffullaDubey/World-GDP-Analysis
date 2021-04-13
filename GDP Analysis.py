@@ -126,3 +126,49 @@ msle_test = mean_squared_log_error(test_pred_Y, test_Y)
 
 print('rmse_train:',rmse_train,'msle_train:',msle_train)
 print('rmse_test:',rmse_test,'msle_test:',msle_test)
+
+#Data Visualisation
+plt.figure(figsize=(18,12))
+
+train_test_Y = train_Y.append(test_Y)
+train_test_pred_Y = train_pred_Y.append(test_pred_Y)
+
+data_shuffled = data.loc[train_test_Y.index]
+label = data_shuffled['Country']
+
+colors = {'ASIA (EX. NEAR EAST)         ':'red',
+          'EASTERN EUROPE                     ':'orange',
+          'NORTHERN AFRICA                    ':'gold',
+          'OCEANIA                            ':'green',
+          'WESTERN EUROPE                     ':'blue',
+          'SUB-SAHARAN AFRICA                 ':'purple',
+          'LATIN AMER. & CARIB    ':'olive',
+          'C.W. OF IND. STATES ':'cyan',
+          'NEAR EAST                          ':'hotpink',
+          'NORTHERN AMERICA                   ':'lightseagreen',
+          'BALTICS                            ':'rosybrown'}
+
+for region, color in colors.items():
+    X = train_test_Y.loc[data_shuffled['Region']==region]
+    Y = train_test_pred_Y.loc[data_shuffled['Region']==region]
+    ax = sns.regplot(x=X, y=Y, marker='.', fit_reg=False, color=color, scatter_kws={'s':200, 'linewidths':0}, label=region) 
+plt.legend(loc=4,prop={'size': 12})  
+
+ax.set_xlabel('GDP ($ per capita) ground truth',labelpad=40)
+ax.set_ylabel('GDP ($ per capita) predicted',labelpad=40)
+ax.xaxis.label.set_fontsize(24)
+ax.yaxis.label.set_fontsize(24)
+ax.tick_params(labelsize=12)
+
+x = np.linspace(-1000,50000,100) # 100 linearly spaced numbers
+y = x
+plt.plot(x,y,c='gray')
+
+plt.xlim(-1000,60000)
+plt.ylim(-1000,40000)
+
+for i in range(0,train_test_Y.shape[0]):
+    if((data_shuffled['Area (sq. mi.)'].iloc[i]>8e5) |
+       (data_shuffled['Population'].iloc[i]>1e8) |
+       (data_shuffled['GDP ($ per capita)'].iloc[i]>10000)):
+        plt.text(train_test_Y.iloc[i]+200, train_test_pred_Y.iloc[i]-200, label.iloc[i], size='small')
